@@ -110,45 +110,26 @@ small { color: var(--ink-soft); font-size: 0.85em; }
 .group { margin: 0 0 18px; }
 .label { display: block; font-family: 'DG Lora SemiBold', Georgia, serif; margin-bottom: 8px; }
 
-.year-picker { display: flex; align-items: stretch; gap: 8px; }
-.year-picker input {
-  flex: 1;
-  min-width: 0;
-  text-align: center;
-  font: 1.9rem/1.2 'DG Lora SemiBold', Georgia, serif;
-  color: var(--ink);
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 6px;
-  -moz-appearance: textfield;
-}
-.year-picker input::-webkit-inner-spin-button,
-.year-picker input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-.step {
-  width: 52px;
-  border: 1px solid var(--line);
-  background: var(--surface-2);
-  color: var(--ink);
-  border-radius: 12px;
-  font-size: 1.6rem;
-  cursor: pointer;
-}
-.step:hover { background: var(--peach); }
-
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
 .chip {
   border: 1px solid var(--line);
+  font-size: 1rem;
   background: transparent;
   color: var(--ink);
   border-radius: 999px;
-  padding: 3px 12px;
+  padding: 6px 14px;
   font: inherit;
-  font-size: 0.92rem;
   cursor: pointer;
 }
 .chip[aria-pressed="true"] { background: var(--peach); border-color: var(--peach-deep); }
 .chip:hover { border-color: var(--peach-deep); }
+.chips .chips { display: contents; }
+.year-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, 1.35fr); gap: 6px; margin-top: 0; }
+.year-row .chip { padding: 6px 2px; text-align: center; }
+.chip-input { width: 100%; min-width: 0; cursor: text; text-align: center; -moz-appearance: textfield; }
+.chip-input::placeholder { color: var(--ink-soft); }
+.chip-input::-webkit-inner-spin-button, .chip-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.chip-input.active { background: var(--peach); border-color: var(--peach-deep); }
 
 .segmented { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 4px; gap: 4px; }
 .segmented label { position: relative; }

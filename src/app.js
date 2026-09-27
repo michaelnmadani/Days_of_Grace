@@ -182,6 +182,14 @@ function updateChips(year) {
     wrap.innerHTML = years.map((y) => `<button type="button" class="chip" data-year="${y}">${y}</button>`).join('');
   }
   for (const b of wrap.querySelectorAll('.chip')) b.setAttribute('aria-pressed', String(Number(b.dataset.year) === year));
+  const other = document.getElementById('year-other');
+  const custom = !years.includes(year);
+  other.classList.toggle('active', custom);
+  if (custom) {
+    if (document.activeElement !== other) other.value = year;
+  } else if (document.activeElement !== other) {
+    other.value = '';
+  }
 }
 
 // ------------------------------------------------------------------ PDF
@@ -296,23 +304,27 @@ function init() {
     if (e.target.type === 'text' || e.target.tagName === 'TEXTAREA' || e.target.type === 'number') soon();
     else renderPreview();
   });
-  form.addEventListener('change', (e) => {
-    if (e.target.name === 'year') {
-      e.target.value = clampYear(e.target.value);
-      renderPreview();
-    }
-  });
-  const step = (d) => {
-    const el = form.elements.namedItem('year');
-    el.value = clampYear(Number(el.value) + d);
+  const other = document.getElementById('year-other');
+  const useOther = () => {
+    const v = other.value.trim();
+    if (!/^\d{4}$/.test(v)) return;
+    form.elements.namedItem('year').value = clampYear(v);
     renderPreview();
   };
-  document.getElementById('year-down').addEventListener('click', () => step(-1));
-  document.getElementById('year-up').addEventListener('click', () => step(1));
+  other.addEventListener('input', (e) => {
+    e.stopPropagation();
+    if (/^\d{4}$/.test(other.value.trim())) useOther();
+  });
+  other.addEventListener('change', useOther);
+  other.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); useOther(); other.blur(); }
+  });
+  other.addEventListener('blur', () => updateChips(readForm().year));
   document.getElementById('year-chips').addEventListener('click', (e) => {
     const y = e.target.closest('.chip')?.dataset.year;
     if (!y) return;
     form.elements.namedItem('year').value = y;
+    other.value = '';
     renderPreview();
   });
   document.getElementById('download').addEventListener('click', download);
