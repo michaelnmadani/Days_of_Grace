@@ -1,0 +1,20 @@
+{
+  "name": "days-of-grace",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Generate printable 'Days of Grace' Catholic church-attendance tracker PDFs for any year.",
+  "type": "module",
+  "scripts": {
+    "start": "http-server . -p 8080 -c-1",
+    "test": "node --test \"tests/*.test.js\"",
+    "vendor": "node scripts/vendor.mjs",
+    "sample": "node scripts/generate.mjs"
+  },
+  "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
+    "pdf-lib": "^1.17.1"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

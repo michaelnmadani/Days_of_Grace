@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Days of Grace – Church Tracker</title>
+  <meta name="description" content="Create a printable Days of Grace church tracker PDF for any year: every Sunday, holy day and major feast of the Catholic liturgical calendar, in soft pastel colours with hand-drawn style icons.">
+  <meta name="theme-color" content="#f5d6c8">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/Sacramento-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="fonts/Lora-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="css/site.css">
+  <script src="vendor/fontkit.umd.min.js" defer></script>
+  <script type="importmap">
+    { "imports": { "pdf-lib": "./vendor/pdf-lib.esm.min.js", "@pdf-lib/fontkit": "./vendor/fontkit.js" } }
+  </script>
+  <script type="module" src="src/app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark">Days of Grace</span>
+      <span class="brand-sub">Church Tracker</span>
+    </div>
+    <p class="tagline">A printable, one-page Mass tracker for any year – every Sunday, holy day and major feast, ready to tick off.</p>
+  </header>
+
+  <main class="layout">
+    <form class="panel" id="controls" autocomplete="off" onsubmit="return false">
+      <section class="group">
+        <label class="label" for="year">Year</label>
+        <div class="year-picker">
+          <button type="button" class="step" id="year-down" aria-label="Previous year">&minus;</button>
+          <input id="year" name="year" type="number" inputmode="numeric" min="1583" max="4099" step="1" required>
+          <button type="button" class="step" id="year-up" aria-label="Next year">+</button>
+        </div>
+        <div class="chips" id="year-chips" aria-label="Quick years"></div>
+      </section>
+
+      <section class="group">
+        <span class="label" id="paper-label">Paper size</span>
+        <div class="segmented" role="radiogroup" aria-labelledby="paper-label">
+          <label><input type="radio" name="paper" value="a4"><span>A4</span></label>
+          <label><input type="radio" name="paper" value="letter"><span>US Letter</span></label>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="button" class="btn primary" id="download">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" /></svg>
+          <span>Download PDF</span>
+        </button>
+        <button type="button" class="btn" id="open">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V4h10v5M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v6H7z" /></svg>
+          <span>Open to print</span>
+        </button>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+
+      <details class="group more" open>
+        <summary>Calendar options</summary>
+        <p class="hint">Some feasts are kept on different days in different countries. Choose what your parish does.</p>
+        <label class="field">
+          <span>Epiphany</span>
+          <select name="epiphany">
+            <option value="sunday">Sunday between Jan 2 and Jan 8</option>
+            <option value="jan6">January 6</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Ascension</span>
+          <select name="ascension">
+            <option value="thursday">Thursday (40 days after Easter)</option>
+            <option value="sunday">Sunday (replaces 7th Sunday of Easter)</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Corpus Christi</span>
+          <select name="corpusChristi">
+            <option value="sunday">Sunday after Trinity Sunday</option>
+            <option value="thursday">Thursday after Trinity Sunday</option>
+          </select>
+        </label>
+        <label class="check">
+          <input type="checkbox" name="extraFeasts">
+          <span>Also list the Presentation, Annunciation, St John the Baptist, Transfiguration, Holy Cross and Lateran Basilica on weekdays</span>
+        </label>
+      </details>
+
+      <details class="group more">
+        <summary>Personalise</summary>
+        <label class="field">
+          <span>Title</span>
+          <input type="text" name="title" maxlength="28" placeholder="Days of Grace">
+        </label>
+        <label class="field">
+          <span>Subtitle <small>({year} becomes the year)</small></span>
+          <input type="text" name="subtitle" maxlength="40" placeholder="{year} CHURCH TRACKER">
+        </label>
+        <label class="field">
+          <span>Verse</span>
+          <select name="verse" id="verse"></select>
+        </label>
+        <div id="custom-verse" hidden>
+          <label class="field">
+            <span>Your verse <small>(one line per row, two rows fit best)</small></span>
+            <textarea name="verseText" rows="3" maxlength="140"></textarea>
+          </label>
+          <label class="field">
+            <span>Reference</span>
+            <input type="text" name="verseRef" maxlength="32" placeholder="Psalm 122:1">
+          </label>
+        </div>
+      </details>
+
+      <details class="group more">
+        <summary>Several years in one PDF</summary>
+        <p class="hint">One page per year – handy for printing a few years ahead.</p>
+        <div class="range">
+          <label class="field"><span>From</span><input type="number" name="rangeFrom" min="1583" max="4099"></label>
+          <label class="field"><span>To</span><input type="number" name="rangeTo" min="1583" max="4099"></label>
+        </div>
+        <button type="button" class="btn" id="download-range">Download years</button>
+      </details>
+    </form>
+
+    <section class="preview-wrap" aria-label="Preview">
+      <div class="paper" id="preview" aria-busy="true">
+        <div class="loading">Preparing your tracker…</div>
+      </div>
+      <aside class="key-dates" id="key-dates" aria-label="Key dates"></aside>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>
+      Dates follow the General Roman Calendar (Sundays, holy days of obligation and major feasts) with the transfers set out in the
+      General Norms for the Liturgical Year. Check your diocesan calendar for local variations.
+    </p>
+    <p>
+      Fonts: <a href="https://fonts.google.com/specimen/Sacramento">Sacramento</a> and <a href="https://fonts.google.com/specimen/Lora">Lora</a> (SIL Open Font License).
+      PDF made in your browser with <a href="https://pdf-lib.js.org/">pdf-lib</a> – nothing is uploaded.
+    </p>
+  </footer>
+</body>
+</html>
